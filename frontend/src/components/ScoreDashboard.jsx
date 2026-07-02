@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "../i18n.js";
+import { apiUrl } from "../api.js";
 
 function ScoreGauge({ score }) {
   const pct = (score - 300) / 600;
@@ -59,7 +60,7 @@ export default function ScoreDashboard({ location, countryMeta, business, debt }
       setError(null);
       try {
         const [demandRes, macroRes] = await Promise.all([
-          fetch("/api/market-demand", {
+          fetch(apiUrl("/api/market-demand"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -69,14 +70,14 @@ export default function ScoreDashboard({ location, countryMeta, business, debt }
               country: countryMeta?.name,
             }),
           }).then((r) => r.json()),
-          fetch(`/api/economy/${location.countryCode}`).then((r) => r.json()),
+          fetch(apiUrl(`/api/economy/${location.countryCode}`)).then((r) => r.json()),
         ]);
 
         if (cancelled) return;
         setDemand(demandRes);
         setMacro(macroRes);
 
-        const scoreRes = await fetch("/api/score", {
+        const scoreRes = await fetch(apiUrl("/api/score"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -103,7 +104,7 @@ export default function ScoreDashboard({ location, countryMeta, business, debt }
 
         // Fetch recommendations + risk flags after the score is known (non-blocking for the main view)
         setAdviceLoading(true);
-        const adviceRes = await fetch("/api/recommendations", {
+        const adviceRes = await fetch(apiUrl("/api/recommendations"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

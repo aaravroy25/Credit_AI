@@ -7,6 +7,7 @@ import BusinessProfileForm from "./components/BusinessProfileForm.jsx";
 import EMICalculator from "./components/EMICalculator.jsx";
 import ScoreDashboard from "./components/ScoreDashboard.jsx";
 import Chatbot from "./components/Chatbot.jsx";
+import { apiUrl } from "./api.js";
 
 const initialBusiness = {
   businessName: "",
@@ -36,7 +37,7 @@ function Wizard() {
   const [debt, setDebt] = useState(initialDebt);
 
   useEffect(() => {
-    fetch("/api/locations/countries")
+    fetch(apiUrl("/api/locations/countries"))
       .then((r) => r.json())
       .then(setCountries)
       .catch(() => setCountries([]));

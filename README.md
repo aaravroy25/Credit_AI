@@ -170,3 +170,48 @@ The dashboard also shows:
   Leaflet CSS caching issue.
 - **AI features return generic text** → check `backend/.env` has a valid `GEMINI_API_KEY` and
   you restarted the backend terminal after adding it.
+
+---
+
+## 11. Deploying (backend on Render, frontend on Vercel)
+
+The frontend calls the backend through `frontend/src/api.js`, which reads `VITE_API_URL` at
+build time. Locally it's empty (Vite's dev proxy handles `/api`); in production you point it at
+your deployed backend.
+
+### Step 1 — Deploy the backend to Render
+
+1. Go to **https://render.com** → sign in with GitHub → **New +** → **Web Service**.
+2. Pick this repo. Render should detect `render.yaml` at the repo root and pre-fill the settings
+   (service name `creditlens-backend`, root directory `backend`, build `npm install`, start
+   `npm start`). If it doesn't auto-detect, set those fields manually.
+3. Under **Environment**, add:
+   - `GEMINI_API_KEY` = your Gemini key (same one from `backend/.env`)
+4. Click **Create Web Service**. Wait for the build to finish, then copy the URL Render gives you,
+   e.g. `https://creditlens-backend.onrender.com`.
+5. Confirm it's alive by visiting `https://creditlens-backend.onrender.com/api/health` — you
+   should see `{"status":"ok",...}`.
+
+> Free Render web services spin down after inactivity; the first request after idling can take
+> ~30–50s to wake up. That's normal.
+
+### Step 2 — Deploy the frontend to Vercel
+
+1. Go to **https://vercel.com** → sign in with GitHub → **Add New** → **Project** → pick this repo.
+2. Set **Root Directory** to `frontend` (Vercel will auto-detect the Vite framework preset once
+   you do — build command `vite build`, output directory `dist`).
+3. Under **Environment Variables**, add:
+   - `VITE_API_URL` = the Render URL from Step 1, e.g. `https://creditlens-backend.onrender.com`
+     (no trailing slash)
+4. Click **Deploy**. Once it's done, Vercel gives you a URL like
+   `https://credit-ai.vercel.app` — that's your live app.
+
+### Step 3 — Sanity check
+
+Open the Vercel URL, click a country on the map, fill in the business form, and get to the score
+step. If you see "Failed to fetch" or a CORS error in the browser console, double-check
+`VITE_API_URL` is set exactly to the Render URL and redeploy the frontend (env var changes on
+Vercel require a redeploy to take effect).
+
+If you ever change `GEMINI_API_KEY` or other backend env vars, redeploy the Render service the
+same way; if you change `VITE_API_URL` or any frontend code, redeploy on Vercel.

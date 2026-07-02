@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "../i18n.js";
+import { apiUrl } from "../api.js";
 
 export default function Chatbot() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function Chatbot() {
     setSending(true);
 
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch(apiUrl("/api/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

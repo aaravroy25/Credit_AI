@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "re
 import L from "leaflet";
 import { useTranslation } from "../i18n.js";
 import { COUNTRY_COORDS, FLAGSHIP_ZOOM } from "../data/countryCoords.js";
+import { apiUrl } from "../api.js";
 
 // Fix default marker icon paths (Vite + Leaflet quirk — without this, pins are invisible)
 delete L.Icon.Default.prototype._getIconUrl;
@@ -58,7 +59,7 @@ export default function LocationSelector({ countries, value, onChange }) {
       return;
     }
     setDetailLoading(true);
-    fetch(`/api/locations/countries/${value.countryCode}`)
+    fetch(apiUrl(`/api/locations/countries/${value.countryCode}`))
       .then((r) => r.json())
       .then((d) => setCountryDetail(d))
       .catch(() => setCountryDetail(null))

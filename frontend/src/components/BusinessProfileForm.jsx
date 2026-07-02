@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "../i18n.js";
+import { apiUrl } from "../api.js";
 
 export default function BusinessProfileForm({ value, onChange }) {
   const { t } = useTranslation();
   const [industries, setIndustries] = useState([]);
 
   useEffect(() => {
-    fetch("/api/locations/industries")
+    fetch(apiUrl("/api/locations/industries"))
       .then((r) => r.json())
       .then(setIndustries)
       .catch(() => setIndustries([]));
