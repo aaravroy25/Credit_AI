@@ -2,3 +2,4 @@ venv/
 __pycache__/
 *.pyc
 .env
+\n# Node and environment artifacts\nnode_modules/\nfrontend/node_modules/\nbackend/node_modules/\n.DS_Store\n
